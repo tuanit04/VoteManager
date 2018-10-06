@@ -1,0 +1,74 @@
+package t3.ads;
+
+import java.sql.*;
+import java.util.Stack;
+
+public class ConnectionPoolImpl implements ConnectionPool {
+    private String username;
+    private String userpass;
+    private String diver;
+    private String url;
+    private String objectname;
+    protected Connection con;
+    private Stack pool;
+    public ConnectionPoolImpl() {
+        this.username = "tuanit04";
+        this.userpass = "123";
+        this.diver = "com.mysql.jdbc.Driver";
+        this.url = "jdbc:mysql://localhost:3306/jp170208_data";
+        this.pool = new Stack();
+        loadDriver();
+    }
+
+    /**
+     * loadDriver
+     */
+    private void loadDriver() {
+        try {
+            Class.forName(this.diver).newInstance();
+        } catch (ClassNotFoundException ex) {
+        } catch (IllegalAccessException ex) {
+        } catch (InstantiationException ex) {
+        }
+    }
+
+    /**
+     * getConnection
+     *
+     * @param objectname String
+     * @return Connection
+     * @throws SQLException
+     * @todo Implement this t3.ads.ConnectionPool method
+     */
+    public Connection getConnection(String objectname) throws SQLException {
+        if(this.pool.isEmpty()){
+            System.out.println(objectname + " have created anew Connection");
+            return DriverManager.getConnection(this.url);
+        }
+        else{
+            System.out.println(objectname + " have poped the Conection");
+            return (Connection) this.pool.pop();
+        }
+    }
+
+    /**
+     * releaseConnection
+     *
+     * @param objectname String
+     * @param con Connection
+     * @throws SQLException
+     * @todo Implement this t3.ads.ConnectionPool method
+     */
+    public void releaseConnection(String objectname, Connection con) throws
+            SQLException {
+        System.out.println(objectname + " have pushed the Connection");
+        this.pool.push(con);
+    }
+    protected void finallize()throws Throwable{
+        this.pool.clear();
+        this.pool = null;
+        super.finalize();
+        System.out.println("CP is closed.");
+    }
+
+}

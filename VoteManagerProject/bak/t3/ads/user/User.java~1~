@@ -1,0 +1,5 @@
+package t3.ads.user;
+import t3.object.UserObject;
+public interface User {
+    public boolean addUser();
+}
